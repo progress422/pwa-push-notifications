@@ -50,8 +50,9 @@ async function initializePWAApp() {
       return;
     }
 
-    // Register service worker
+    // Register service worker and wait for it to be ready
     await registerServiceWorker();
+    await navigator.serviceWorker.ready;
     
     // Check current notification permission
     await checkNotificationPermission();
@@ -59,7 +60,7 @@ async function initializePWAApp() {
     // Set up event listeners
     setupEventListeners();
     
-    // Check for existing token
+    // Check for existing token (only after service worker is ready)
     await checkExistingToken();
     
   } catch (error) {
@@ -103,7 +104,12 @@ async function checkNotificationPermission() {
 
 async function checkExistingToken() {
   try {
-    const token = await getToken(messaging, { vapidKey });
+    // Wait for our service worker to be registered first
+    const registration = await navigator.serviceWorker.ready;
+    const token = await getToken(messaging, { 
+      vapidKey,
+      serviceWorkerRegistration: registration
+    });
     if (token) {
       console.log('Existing FCM token:', token);
       currentToken = token;
@@ -152,8 +158,12 @@ async function subscribeToNotifications() {
       throw new Error('Notification permission denied');
     }
     
-    // Get FCM token
-    const token = await getToken(messaging, { vapidKey });
+    // Get FCM token using our registered service worker
+    const registration = await navigator.serviceWorker.ready;
+    const token = await getToken(messaging, { 
+      vapidKey,
+      serviceWorkerRegistration: registration
+    });
     
     if (token) {
       console.log('FCM token:', token);
