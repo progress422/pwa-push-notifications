@@ -25,8 +25,8 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification?.title || 'New Message';
   const notificationOptions = {
     body: payload.notification?.body || 'You have a new message',
-    icon: payload.notification?.icon || '/icons/icon-192x192.png',
-    badge: '/icons/icon-72x72.png',
+    icon: payload.notification?.icon || './icons/icon-192x192.png',
+    badge: './icons/icon-72x72.png',
     tag: 'notification-tag',
     requireInteraction: true,
     actions: [
@@ -67,7 +67,7 @@ self.addEventListener('notificationclick', (event) => {
       
       // If no window/tab is open, open a new one
       if (clients.openWindow) {
-        return clients.openWindow('/');
+        return clients.openWindow('./');
       }
     })
   );
@@ -95,8 +95,8 @@ self.addEventListener('push', (event) => {
       const title = payload.notification?.title || 'New Message';
       const options = {
         body: payload.notification?.body || 'You have a new message',
-        icon: '/icons/icon-192x192.png',
-        badge: '/icons/icon-72x72.png',
+        icon: './icons/icon-192x192.png',
+        badge: './icons/icon-72x72.png',
         tag: 'push-notification'
       };
       

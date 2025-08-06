@@ -70,7 +70,8 @@ async function initializePWAApp() {
 
 async function registerServiceWorker() {
   try {
-    const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+    // Use relative path for better compatibility with different hosting environments
+    const registration = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
     console.log('Service Worker registered successfully:', registration);
     updateStatus('Service Worker registered successfully', 'success');
   } catch (error) {
@@ -211,7 +212,7 @@ function testLocalNotification() {
     showLocalNotification(
       'Test Notification',
       'This is a test notification from your PWA!',
-      '/icons/icon-192x192.png'
+      './icons/icon-192x192.png'
     );
     logNotification('Test notification sent', {});
   } else {
@@ -222,8 +223,8 @@ function testLocalNotification() {
 function showLocalNotification(title, body, icon) {
   const options = {
     body: body,
-    icon: icon || '/icons/icon-192x192.png',
-    badge: '/icons/icon-72x72.png',
+    icon: icon || './icons/icon-192x192.png',
+    badge: './icons/icon-72x72.png',
     tag: 'local-notification',
     requireInteraction: false,
     timestamp: Date.now()
