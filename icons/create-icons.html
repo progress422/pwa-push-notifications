@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Icon Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .icon-preview {
+            display: inline-block;
+            margin: 10px;
+            text-align: center;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin: 5px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>PWA Icon Generator</h1>
+    <p>This tool generates placeholder icons for your PWA. Click "Generate All Icons" to create and download all required sizes.</p>
+    
+    <button onclick="generateAllIcons()">Generate All Icons</button>
+    <button onclick="generateSingleIcon(192)">Generate 192x192 Only</button>
+    
+    <div id="icons-container"></div>
+    
+    <script>
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        
+        function createIcon(size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            // Create gradient background
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // Add rounded corners
+            ctx.globalCompositeOperation = 'destination-in';
+            ctx.beginPath();
+            const radius = size * 0.1;
+            ctx.roundRect(0, 0, size, size, radius);
+            ctx.fill();
+            ctx.globalCompositeOperation = 'source-over';
+            
+            // Add notification bell icon (simplified)
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = size * 0.02;
+            
+            // Bell shape
+            const centerX = size / 2;
+            const centerY = size / 2;
+            const bellRadius = size * 0.15;
+            
+            // Bell body
+            ctx.beginPath();
+            ctx.arc(centerX, centerY - size * 0.05, bellRadius, 0.2 * Math.PI, 0.8 * Math.PI);
+            ctx.lineTo(centerX - bellRadius * 0.8, centerY + size * 0.1);
+            ctx.lineTo(centerX + bellRadius * 0.8, centerY + size * 0.1);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Bell handle
+            ctx.beginPath();
+            ctx.arc(centerX, centerY - size * 0.05 - bellRadius, size * 0.03, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Bell clapper
+            ctx.beginPath();
+            ctx.arc(centerX, centerY + size * 0.15, size * 0.02, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            return canvas;
+        }
+        
+        function downloadCanvas(canvas, filename) {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+        
+        function generateSingleIcon(size) {
+            const canvas = createIcon(size);
+            const container = document.getElementById('icons-container');
+            
+            const preview = document.createElement('div');
+            preview.className = 'icon-preview';
+            preview.innerHTML = `
+                <div>${size}x${size}</div>
+                <div><button onclick="downloadCanvas(this.nextElementSibling, 'icon-${size}x${size}.png')">Download</button></div>
+            `;
+            preview.appendChild(canvas);
+            
+            container.appendChild(preview);
+        }
+        
+        function generateAllIcons() {
+            const container = document.getElementById('icons-container');
+            container.innerHTML = '';
+            
+            sizes.forEach(size => {
+                generateSingleIcon(size);
+            });
+            
+            // Auto-download all icons
+            setTimeout(() => {
+                const canvases = container.querySelectorAll('canvas');
+                canvases.forEach((canvas, index) => {
+                    setTimeout(() => {
+                        downloadCanvas(canvas, `icon-${sizes[index]}x${sizes[index]}.png`);
+                    }, index * 500);
+                });
+            }, 1000);
+        }
+        
+        // Polyfill for roundRect if not supported
+        if (!CanvasRenderingContext2D.prototype.roundRect) {
+            CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
+                this.beginPath();
+                this.moveTo(x + radius, y);
+                this.lineTo(x + width - radius, y);
+                this.quadraticCurveTo(x + width, y, x + width, y + radius);
+                this.lineTo(x + width, y + height - radius);
+                this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+                this.lineTo(x + radius, y + height);
+                this.quadraticCurveTo(x, y + height, x, y + height - radius);
+                this.lineTo(x, y + radius);
+                this.quadraticCurveTo(x, y, x + radius, y);
+                this.closePath();
+            };
+        }
+    </script>
+</body>
+</html> 

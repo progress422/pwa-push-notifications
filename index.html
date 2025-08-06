@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2196F3">
+    <title>PWA Push Notifications</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>PWA Push Notifications</h1>
+            <p>Firebase Push Notification Demo</p>
+        </header>
+        
+        <main>
+            <div class="card">
+                <h2>Notification Status</h2>
+                <div id="notification-status" class="status">
+                    <p>Checking notification support...</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Actions</h2>
+                <button id="subscribe-btn" class="btn" disabled>
+                    Subscribe to Notifications
+                </button>
+                <button id="unsubscribe-btn" class="btn secondary" disabled>
+                    Unsubscribe
+                </button>
+                <button id="test-notification-btn" class="btn secondary">
+                    Test Local Notification
+                </button>
+            </div>
+            
+            <div class="card">
+                <h2>Subscription Details</h2>
+                <div id="subscription-details">
+                    <p>No subscription active</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Notification Log</h2>
+                <div id="notification-log" class="log">
+                    <p>Notifications will appear here...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Firebase SDK -->
+    <script type="module" src="app.js"></script>
+</body>
+</html> 

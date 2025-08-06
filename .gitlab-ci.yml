@@ -1,0 +1,56 @@
+# GitLab CI/CD configuration for PWA deployment
+
+stages:
+  - build
+  - deploy
+
+variables:
+  # Change this to your desired subdirectory if needed
+  PUBLIC_PATH: "/"
+
+# Build stage (optional - for future enhancements)
+build:
+  stage: build
+  image: node:18-alpine
+  script:
+    - echo "Building PWA application..."
+    - echo "No build process needed for vanilla JS PWA"
+    - ls -la
+  artifacts:
+    paths:
+      - ./*
+    expire_in: 1 hour
+  only:
+    - main
+    - master
+    - develop
+
+# Deploy to GitLab Pages
+pages:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - echo "Deploying PWA to GitLab Pages..."
+    - mkdir -p public
+    - cp -r * public/ || true
+    - rm -rf public/.git public/.gitlab-ci.yml public/README.md public/generate-icons.html 2>/dev/null || true
+    - ls -la public/
+  artifacts:
+    paths:
+      - public
+  only:
+    - main
+    - master
+
+# Alternative deployment to a custom server (uncomment if needed)
+# deploy_server:
+#   stage: deploy
+#   image: alpine:latest
+#   before_script:
+#     - apk add --no-cache rsync openssh
+#   script:
+#     - echo "Deploying to custom server..."
+#     - rsync -avz --delete ./ $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH
+#   only:
+#     - main
+#   when: manual 
