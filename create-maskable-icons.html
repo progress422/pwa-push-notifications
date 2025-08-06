@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Maskable Icons</title>
+</head>
+<body>
+    <h1>Creating Maskable Icons...</h1>
+    <p>This will create icon-192x192-maskable.png and icon-512x512-maskable.png</p>
+    
+    <script>
+        function createMaskableIcon(size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            // Create gradient background (full canvas for maskable)
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // Add notification bell icon (smaller for maskable safe area - 40% of canvas)
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = size * 0.01;
+            
+            // Bell shape (smaller and centered for maskable)
+            const centerX = size / 2;
+            const centerY = size / 2;
+            const bellRadius = size * 0.08; // Smaller for safe area
+            
+            // Bell body
+            ctx.beginPath();
+            ctx.arc(centerX, centerY - size * 0.02, bellRadius, 0.2 * Math.PI, 0.8 * Math.PI);
+            ctx.lineTo(centerX - bellRadius * 0.8, centerY + size * 0.05);
+            ctx.lineTo(centerX + bellRadius * 0.8, centerY + size * 0.05);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Bell handle
+            ctx.beginPath();
+            ctx.arc(centerX, centerY - size * 0.02 - bellRadius, size * 0.015, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Bell clapper
+            ctx.beginPath();
+            ctx.arc(centerX, centerY + size * 0.08, size * 0.01, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            return canvas;
+        }
+        
+        function downloadCanvas(canvas, filename) {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+        
+        // Create and download both maskable icons
+        const sizes = [192, 512];
+        
+        sizes.forEach((size, index) => {
+            setTimeout(() => {
+                const canvas = createMaskableIcon(size);
+                downloadCanvas(canvas, `icon-${size}x${size}-maskable.png`);
+                console.log(`Generated icon-${size}x${size}-maskable.png`);
+            }, index * 1000);
+        });
+        
+        document.body.innerHTML += '<p>Icons will be downloaded automatically. Save them to the icons/ folder.</p>';
+    </script>
+</body>
+</html>

@@ -40,6 +40,7 @@
     
     <button onclick="generateAllIcons()">Generate All Icons</button>
     <button onclick="generateSingleIcon(192)">Generate 192x192 Only</button>
+    <button onclick="generateMaskableIcons()">Generate Maskable Icons</button>
     
     <div id="icons-container"></div>
     
@@ -139,6 +140,81 @@
             }, 1000);
         }
         
+        function createMaskableIcon(size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            // Create gradient background (full canvas for maskable)
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // Add notification bell icon (smaller for maskable safe area)
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = size * 0.02;
+            
+            // Bell shape (smaller and centered for maskable)
+            const centerX = size / 2;
+            const centerY = size / 2;
+            const bellRadius = size * 0.1; // Smaller for safe area
+            
+            // Bell body
+            ctx.beginPath();
+            ctx.arc(centerX, centerY - size * 0.03, bellRadius, 0.2 * Math.PI, 0.8 * Math.PI);
+            ctx.lineTo(centerX - bellRadius * 0.8, centerY + size * 0.07);
+            ctx.lineTo(centerX + bellRadius * 0.8, centerY + size * 0.07);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Bell handle
+            ctx.beginPath();
+            ctx.arc(centerX, centerY - size * 0.03 - bellRadius, size * 0.02, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Bell clapper
+            ctx.beginPath();
+            ctx.arc(centerX, centerY + size * 0.1, size * 0.015, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            return canvas;
+        }
+        
+        function generateMaskableIcons() {
+            const container = document.getElementById('icons-container');
+            container.innerHTML = '';
+            
+            const maskableSizes = [192, 512];
+            
+            maskableSizes.forEach(size => {
+                const canvas = createMaskableIcon(size);
+                
+                const preview = document.createElement('div');
+                preview.className = 'icon-preview';
+                preview.innerHTML = `
+                    <div>${size}x${size} (Maskable)</div>
+                    <div><button onclick="downloadCanvas(this.nextElementSibling, 'icon-${size}x${size}-maskable.png')">Download</button></div>
+                `;
+                preview.appendChild(canvas);
+                
+                container.appendChild(preview);
+            });
+            
+            // Auto-download maskable icons
+            setTimeout(() => {
+                const canvases = container.querySelectorAll('canvas');
+                canvases.forEach((canvas, index) => {
+                    setTimeout(() => {
+                        downloadCanvas(canvas, `icon-${maskableSizes[index]}x${maskableSizes[index]}-maskable.png`);
+                    }, index * 500);
+                });
+            }, 1000);
+        }
+
         // Polyfill for roundRect if not supported
         if (!CanvasRenderingContext2D.prototype.roundRect) {
             CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
